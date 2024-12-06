@@ -74,16 +74,35 @@ def deploy_flow(endpoint_name, deployment_name):
     deployment = ManagedOnlineDeployment(
         name=deployment_name,
         endpoint_name=endpoint_name,
-        model=Model(
-            name="ragflow",
-            path=flow_path,  # path to promptflow folder
-            properties=[ # this enables the chat interface in the endpoint test tab
-                ["azureml.promptflow.source_flow_id", "ragflow"],
+        # model=Model(
+        #     name="ragflow",
+        #     path=flow_path,  # path to promptflow folder
+        #     properties=[ # this enables the chat interface in the endpoint test tab
+        #         ["azureml.promptflow.source_flow_id", "ragflow"],
+        #         ["azureml.promptflow.mode", "chat"],
+        #         ["azureml.promptflow.chat_input", "question"],
+        #         ["azureml.promptflow.chat_output", "answer"]
+        #     ]
+        # model=Model(
+        #     name="ragflow",
+        #     path=flow_path,  # path to promptflow folder
+        #     properties=[ # this enables the chat interface in the endpoint test tab
+        #         ["azureml.promptflow.source_flow_id", "ragflow"],
+        #         ["azureml.promptflow.mode", "chat"],
+        #         ["azureml.promptflow.chat_input", "question"],
+        #         ["azureml.promptflow.chat_output", "answer"]
+        #     ]        
+        # ), 
+        model = Model(
+            name="ragwithtrace",
+            path=flow_path,  # path to the promptflow folder
+            properties=[  # enables the chat interface in the endpoint test tab
+                ["azureml.promptflow.source_flow_id", "ragwithtrace"],
                 ["azureml.promptflow.mode", "chat"],
                 ["azureml.promptflow.chat_input", "question"],
                 ["azureml.promptflow.chat_output", "answer"]
             ]
-        ),
+        ),                
         environment=Environment(
             build=BuildContext(
                 path=flow_path,
@@ -118,7 +137,10 @@ def deploy_flow(endpoint_name, deployment_name):
             "AZURE_SEARCH_ENDPOINT": azure_config.search_endpoint,
             "AZURE_OPENAI_CHAT_DEPLOYMENT": os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT"),
             "AZURE_OPENAI_EMBEDDING_MODEL": os.getenv("AZURE_OPENAI_EMBEDDING_MODEL"),
-            "AZURE_OPENAI_EMBEDDING_DEPLOYMENT": os.getenv("AZURE_OPENAI_EMBEDDING_MODEL")  # using the same name for the deployment as the model for simplicity
+            "AZURE_OPENAI_EMBEDDING_DEPLOYMENT": os.getenv("AZURE_OPENAI_EMBEDDING_MODEL"),  # using the same name for the deployment as the model for simplicity
+            "AZURE_TENANT_ID": os.environ["AZURE_TENANT_ID"],
+            "AZURE_CLIENT_ID": os.environ["AZURE_CLIENT_ID"],
+            "AZURE_CLIENT_SECRET": os.environ["AZURE_CLIENT_SECRET"]
         }
     )
 
